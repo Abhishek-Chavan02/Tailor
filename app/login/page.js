@@ -6,8 +6,7 @@ import Button from "../components/button";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useAppDispatch } from "../redux/hooks";
-import { setCredentials } from "../redux/reducers/authReducer";
-import { login } from "../redux/actions/loginAction";
+import { login } from "../redux/actions/authAction";
 
 export default function Login() {
 

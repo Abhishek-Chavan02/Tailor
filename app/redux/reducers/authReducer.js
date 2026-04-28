@@ -1,7 +1,7 @@
 import { USER_LOGIN_FAIL, USER_LOGIN_REQUEST, USER_LOGIN_SUCCESS } from "../constant";
 
 const initialState = {
-  userInfo: "",
+  userInfo: null,
   loading: false,
 };
 
@@ -24,7 +24,7 @@ export const loginReducer = (state = initialState, action) => {
       return {
         ...state,
         loading: false,
-        userInfo: "",
+        userInfo: null,
       };
 
     default:

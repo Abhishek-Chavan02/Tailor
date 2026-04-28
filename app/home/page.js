@@ -9,8 +9,13 @@ export default function Home(){
     return(<>
     <h1>Home</h1>
     <div className="mt-4">
-      <p>Email: {userInfo.email}</p>
-      <p>Password: {userInfo.password}</p>
+      {userInfo ? (
+        <>
+          <p>Email: {userInfo.email}</p>
+        </>
+      ) : (
+        <p>No user information available</p>
+      )}
     </div>
     </>)
 }
