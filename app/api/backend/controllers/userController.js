@@ -1,19 +1,29 @@
 import { NextResponse } from "next/server";
 import { createUser, findUserByEmail } from "../services/userService";
 
-export async function createUserController(request) {
+export async function createUserController(data) {
+  // Handle both direct data object and request object
   let body;
-  try {
-    body = await request.json();
-  } catch {
-    return NextResponse.json({ message: "Invalid JSON body" }, { status: 400 });
+  if (typeof data === 'object' && !data.json) {
+    // Direct data object from route
+    body = data;
+  } else {
+    // Request object
+    try {
+      body = await data.json();
+    } catch {
+      return NextResponse.json({ message: "Invalid JSON body" }, { status: 400 });
+    }
   }
 
   const name = typeof body?.name === "string" ? body.name : "";
   const email = typeof body?.email === "string" ? body.email : "";
   const password = typeof body?.password === "string" ? body.password : "";
+  const phone = typeof body?.phone === "string" ? body.phone : "";
+  const role = typeof body?.role === "string" ? body.role : "user";
 
-  const result = await createUser({ name, email, password });
+  const result = await createUser({ name, email, password, phone, role });
+  
   if (!result.ok) {
     return NextResponse.json({ message: result.error ?? "Failed" }, { status: 400 });
   }

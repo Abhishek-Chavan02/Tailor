@@ -4,20 +4,44 @@ import Image from "next/image";
 import Input from "../components/input";
 import Button from "../components/button";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { useAppDispatch } from "../redux/hooks";
+import { useLayoutEffect, useState } from "react";
+import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { login } from "../redux/actions/authAction";
+import Link from "next/link";
+import { isLoggedIn } from "../utils/auth";
 
 export default function Login() {
 
   const router = useRouter();
   const dispatch = useAppDispatch();
+  const { userInfo, loading } = useAppSelector((state) => state.userLogin);
+  const [canRender, setCanRender] = useState(false);
+  const [formError, setFormError] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  function handleLogin(){
-    dispatch(login({email, password}));
-    router.push("/home");
+  useLayoutEffect(() => {
+    if (isLoggedIn()) {
+      router.replace("/home");
+      return;
+    }
+    if (userInfo) {
+      router.replace("/home");
+      return;
+    }
+    setCanRender(true);
+  }, [userInfo, router]);
+
+  if (!canRender) return null;
+
+  function handleLogin() {
+    const emailTrimmed = email.trim();
+    if (!emailTrimmed || !password) {
+      setFormError("Email and password are required");
+      return;
+    }
+    setFormError("");
+    dispatch(login({ email, password }));
   }
 
   return (
@@ -36,25 +60,35 @@ export default function Login() {
 
 
           <Input
-           placeholder="Email"
-           type="text"
-           value={email}
-           onChange={(e) => setEmail(e.target.value)}
+            placeholder="Email"
+            type="text"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
 
           <Input
-          placeholder="Password"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
+            placeholder="Password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
           />
 
-
-
+          {formError ? (
+            <p className="text-center text-red-200 text-sm -mt-6 mb-6">
+              {formError}
+            </p>
+          ) : null}
           <Button
-          text="Login"
-          onClick={()=>handleLogin()}
+            text="Login"
+            onClick={() => handleLogin()}
           />
+
+          <p className="text-center mt-4 text-red-100">
+            Don't have an account?{" "}
+            <Link href="/signup" className="text-blue-600 hover:underline">
+              Sign Up
+            </Link>
+          </p>
         </div>
       </div>
     </div>

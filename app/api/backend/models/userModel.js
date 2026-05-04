@@ -21,27 +21,28 @@ const userSchema = new mongoose.Schema({
     required: true,
     minlength: 6,
   },
+  phone: {
+    type: String,
+    required: [true, 'Phone number is required'],
+    trim: true,
+    minlength: 10,
+    maxlength: 15
+  },
   role: {
     type: String,
     enum: ["user", "admin"],
     default: "user",
   },
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
-  updatedAt: {
-    type: Date,
-    default: Date.now,
-  },
+}, {
+  timestamps: true
 });
 
-userSchema.pre("save", function (next) {
-  this.updatedAt = new Date();
-  next();
-});
 
-export const User = mongoose.models?.User || mongoose.model("User", userSchema, "users");
+// Clear any existing model to avoid caching issues
+delete mongoose.models.User;
+delete mongoose.connection.models.User;
+
+export const User = mongoose.model("User", userSchema);
 
 export function getAdminUser() {
   return {

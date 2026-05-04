@@ -20,7 +20,15 @@ export const apiRequest = async (url, options = {}) => {
     
     // Check if response is ok
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      let errorMessage = `HTTP error! status: ${response.status}`;
+      try {
+        const errorData = await response.json();
+        errorMessage += ` - ${errorData.message || JSON.stringify(errorData)}`;
+      } catch (e) {
+        // If we can't parse error response, just use status text
+        errorMessage += ` - ${response.statusText}`;
+      }
+      throw new Error(errorMessage);
     }
 
     // Parse JSON response
@@ -28,6 +36,8 @@ export const apiRequest = async (url, options = {}) => {
     return data;
   } catch (error) {
     console.error('API request failed:', error);
+    console.error('Request URL:', url);
+    console.error('Request config:', config);
     throw error;
   }
 };

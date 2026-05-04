@@ -1,21 +1,26 @@
 "use client";
-
-import { useAppSelector } from "../redux/hooks";
+import { useRouter } from 'next/navigation';
+import { useLayoutEffect, useState } from 'react';
+import { isLoggedIn } from '../utils/auth';
 
 export default function Home(){
-    const { userInfo } = useAppSelector((s) => s.userLogin);
- 
+    const router = useRouter();
+    const [canRender, setCanRender] = useState(false);
+
+    useLayoutEffect(() => {
+        if (!isLoggedIn()) {
+            router.replace('/login');
+            return;
+        }
+        setCanRender(true);
+    }, [router]);
+    if (!canRender) return null;
 
     return(<>
-    <h1>Home</h1>
-    <div className="mt-4">
-      {userInfo ? (
-        <>
-          <p>Email: {userInfo.email}</p>
-        </>
-      ) : (
-        <p>No user information available</p>
-      )}
+    <div className="bg-slate-200 h-screen w-screen">
+    
     </div>
     </>)
 }
+
+
