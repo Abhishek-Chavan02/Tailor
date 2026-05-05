@@ -2,7 +2,6 @@
 import Image from "next/image";
 import Button from "../components/button";
 import Input from "../components/input";
-import Dropdown from "../components/dropdown";
 import { useRouter } from "next/navigation";
 import { useLayoutEffect, useState } from "react";
 import { signup } from "../redux/actions/authAction";
@@ -15,6 +14,7 @@ export default function Signup() {
   const dispatch = useAppDispatch();
   const [canRender, setCanRender] = useState(false);
   const [name, setName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [phone, setPhone] = useState("");
@@ -33,7 +33,7 @@ export default function Signup() {
   }, [router]);
 
   function handleSignup() {
-    dispatch(signup({ name, email, password, phone, role }));
+    dispatch(signup({ name, lastName, email, password, phone, role }));
     router.push("/");
   }
 
@@ -52,10 +52,17 @@ export default function Signup() {
           <h2 className="text-4xl text-red-100 font-bold mb-8 text-center">Signup</h2>
 
           <Input
-            placeholder="Name"
+            placeholder="First Name"
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
+          />
+
+          <Input
+            placeholder="Last Name"
+            type="text"
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
           />
 
           <Input
