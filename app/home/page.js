@@ -58,6 +58,9 @@ export default function Home() {
         await dispatch(getAllUsers());
     };
     
+    const handleAddMeasurement = (user) => {
+        router.push(`/measurements?customerId=${user._id}`);
+    };
     const handleCloseEditModal = () => {
         setIsEditModalOpen(false);
         setEditingUser(null);
