@@ -4,8 +4,9 @@ import {
     getAllShirtMeasurementsController,
     getShirtMeasurementsByStatusController,
     getShirtMeasurementsByCustomerIdController,
-    updateShirtMeasurementStatusController,
-    deleteShirtMeasurementController
+    deleteShirtMeasurementController,
+    updateShirtMeasurementController,
+    getShirtMeasurementsByDateController
 } from "../backend/controllers/shirtMeasurementController";
 
 export async function POST(request) {
@@ -30,21 +31,28 @@ export async function POST(request) {
                     return NextResponse.json(statusResult, { status: 400 });
                 }
 
-            case 'updateStatus':
-                const updateResult = await updateShirtMeasurementStatusController(body);
-                if (updateResult.success) {
-                    return NextResponse.json(updateResult, { status: 200 });
-                } else {
-                    return NextResponse.json(updateResult, { status: 400 });
-                }
 
             case 'getByCustomerId':
-                // Use the controller so we get the standard { success, measurements } shape
                 const customerResult = await getShirtMeasurementsByCustomerIdController(body);
                 if (customerResult.success) {
                     return NextResponse.json(customerResult, { status: 200 });
                 } else {
                     return NextResponse.json(customerResult, { status: 400 });
+                }
+            case 'getShirtByDate':
+                const dateResult = await getShirtMeasurementsByDateController();
+                if (dateResult.success) {
+                    return NextResponse.json(dateResult, { status: 200 });
+                } else {
+                    return NextResponse.json(dateResult, { status: 400 });
+                }
+
+            case 'update':
+                const updateResult = await updateShirtMeasurementController(body);
+                if (updateResult.success) {
+                    return NextResponse.json(updateResult, { status: 200 });
+                } else {
+                    return NextResponse.json(updateResult, { status: 400 });
                 }
 
             case 'delete':
@@ -63,29 +71,3 @@ export async function POST(request) {
     }
 }
 
-export async function GET(request) {
-    try {
-        const { searchParams } = new URL(request.url);
-        const customerId = searchParams.get('customerId');
-        
-        if (customerId) {
-            // Get measurements by customer ID
-            const result = await getShirtMeasurementsByCustomerIdController({ customerId });
-            if (result.success) {
-                return NextResponse.json(result, { status: 200 });
-            } else {
-                return NextResponse.json(result, { status: 400 });
-            }
-        } else {
-            // Get all measurements
-            const result = await getAllShirtMeasurementsController();
-            if (result.success) {
-                return NextResponse.json(result, { status: 200 });
-            } else {
-                return NextResponse.json(result, { status: 400 });
-            }
-        }
-    } catch (error) {
-        return NextResponse.json({ message: error.message }, { status: 500 });
-    }
-}

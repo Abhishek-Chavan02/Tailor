@@ -1,9 +1,9 @@
 "use client";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Input from './input';
 import Button from './button';
 
-export default function AddShirt({ customerId, onClose, onSuccess }) {
+export default function EditShirt({ measurement, onClose, onSuccess }) {
     const [formData, setFormData] = useState({
         neck: '',
         shoulder: '',
@@ -14,12 +14,30 @@ export default function AddShirt({ customerId, onClose, onSuccess }) {
         bicep: '',
         wrist: '',
         shirtLength: '',
-        date: new Date().toISOString().split('T')[0], // Default to today's date
+        date: '',
         status: 'Pending'
     });
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+
+    useEffect(() => {
+        if (measurement) {
+            setFormData({
+                neck: measurement.neck || '',
+                shoulder: measurement.shoulder || '',
+                chest: measurement.chest || '',
+                stomach: measurement.stomach || '',
+                sleeveLength: measurement.sleeveLength || '',
+                armhole: measurement.armhole || '',
+                bicep: measurement.bicep || '',
+                wrist: measurement.wrist || '',
+                shirtLength: measurement.shirtLength || '',
+                date: measurement.date ? new Date(measurement.date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+                status: measurement.status || 'Pending'
+            });
+        }
+    }, [measurement]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -41,8 +59,8 @@ export default function AddShirt({ customerId, onClose, onSuccess }) {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    action: 'create',
-                    customerId,
+                    action: 'update',
+                    id: measurement._id,
                     ...formData
                 })
             });
@@ -53,7 +71,7 @@ export default function AddShirt({ customerId, onClose, onSuccess }) {
                 onSuccess && onSuccess();
                 onClose && onClose();
             } else {
-                setError(data.message || 'Failed to create shirt measurement');
+                setError(data.message || 'Failed to update shirt measurement');
             }
         } catch (err) {
             setError('Network error. Please try again.');
@@ -69,7 +87,7 @@ export default function AddShirt({ customerId, onClose, onSuccess }) {
     return (
         <div className="fixed inset-0 backdrop-blur-sm flex items-center justify-center z-50">
             <div className="bg-white p-6 rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-                <h2 className="text-xl font-bold mb-6">Add Shirt Measurement</h2>
+                <h2 className="text-xl font-bold mb-6">Edit Shirt Measurement</h2>
                 
                 {error && (
                     <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
@@ -194,7 +212,7 @@ export default function AddShirt({ customerId, onClose, onSuccess }) {
                                 name="date"
                                 value={formData.date}
                                 onChange={handleChange}
-                                min={new Date().toISOString().split('T')[0]} // Prevent past dates
+                                min={new Date().toISOString().split('T')[0]}
                             />
                         </div>
 
@@ -216,7 +234,7 @@ export default function AddShirt({ customerId, onClose, onSuccess }) {
                     <div className="flex gap-3 mt-6">
                         <Button
                             type="submit"
-                            text={loading ? 'Creating...' : 'Create Measurement'}
+                            text={loading ? 'Updating...' : 'Update Measurement'}
                             disabled={loading}
                             className="flex-1"
                         />

@@ -3,8 +3,9 @@ import {
     getAllShirtMeasurements,
     getShirtMeasurementsByStatus,
     getShirtMeasurementsByCustomerId,
-    updateShirtMeasurementStatus,
-    deleteShirtMeasurement
+    deleteShirtMeasurement,
+    updateShirtMeasurement,
+    getShirtMeasurementsByDate
 } from '../services/shirtMeasurementService';
 
 export async function createShirtMeasurementController(data) {
@@ -35,21 +36,23 @@ export async function getShirtMeasurementsByStatusController(data) {
     }
 }
 
-export async function updateShirtMeasurementStatusController(data) {
-    try {
-        const { id, status } = data;
-        const measurement = await updateShirtMeasurementStatus(id, status);
-        return { success: true, measurement };
-    } catch (error) {
-        return { success: false, message: error.message };
-    }
-}
+
 
 export async function getShirtMeasurementsByCustomerIdController(data) {
     try {
         const { customerId } = data;
         const measurements = await getShirtMeasurementsByCustomerId(customerId);
         return { success: true, measurements };
+    } catch (error) {
+        return { success: false, message: error.message };
+    }
+}
+
+export async function updateShirtMeasurementController(data) {
+    try {
+        const { id, ...updateData } = data;
+        const measurement = await updateShirtMeasurement(id, updateData);
+        return { success: true, measurement };
     } catch (error) {
         return { success: false, message: error.message };
     }
@@ -64,3 +67,13 @@ export async function deleteShirtMeasurementController(data) {
         return { success: false, message: error.message };
     }
 }
+
+export async function getShirtMeasurementsByDateController() {
+    try {
+        const measurements = await getShirtMeasurementsByDate();
+        return { success: true, measurements };
+    } catch (error) {
+        return { success: false, message: error.message };
+    }
+}
+

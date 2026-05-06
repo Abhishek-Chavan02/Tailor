@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import AddShirt from '../components/addShirt';
+import EditShirt from '../components/editShirt';
 import Button from '../components/button';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import { getMeasurementsCustomerId } from "../redux/actions/measurementAction";
@@ -12,6 +13,8 @@ export default function Measurements() {
     const customerId = searchParams.get('customerId');
     const [activeTab, setActiveTab] = useState('pending');
     const [isAddShirtModalOpen, setIsAddShirtModalOpen] = useState(false);
+    const [isEditShirtModalOpen, setIsEditShirtModalOpen] = useState(false);
+    const [editingMeasurement, setEditingMeasurement] = useState(null);
     const dispatch = useAppDispatch();
     const userMeasurementinfo = useAppSelector(
         (state) => state.customerMeasurement?.userMeasurementinfo
@@ -37,6 +40,55 @@ export default function Measurements() {
 
     const handleAddShirtSuccess = () => {
         console.log("Shirt measurement added successfully");
+    };
+
+    const handleEditMeasurement = (measurement) => {
+        setEditingMeasurement(measurement);
+        setIsEditShirtModalOpen(true);
+    };
+
+    const handleCloseEditShirtModal = () => {
+        setIsEditShirtModalOpen(false);
+        setEditingMeasurement(null);
+    };
+
+    const handleEditShirtSuccess = () => {
+        console.log("Shirt measurement updated successfully");
+        // Refresh the measurements data
+        if (customerId) {
+            dispatch(getMeasurementsCustomerId(customerId));
+        }
+    };
+
+    const handleDeleteMeasurement = async (measurement) => {
+        if (window.confirm('Are you sure you want to delete this measurement?')) {
+            try {
+                const response = await fetch('/api/shirt-measurements', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        action: 'delete',
+                        id: measurement._id
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    console.log("Measurement deleted successfully");
+                    if (customerId) {
+                        dispatch(getMeasurementsCustomerId(customerId));
+                    }
+                } else {
+                    alert('Failed to delete measurement: ' + (data.message || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('Error deleting measurement:', error);
+                alert('Network error. Please try again.');
+            }
+        }
     };
 
     const renderTabContent = () => {
@@ -79,7 +131,11 @@ export default function Measurements() {
                             key={measurement._id}
                             className="bg-white rounded-lg shadow-md p-4 border border-gray-200 hover:shadow-lg transition-shadow"
                         >
-                            <div className="flex items-center justify-between">
+                            <div className="flex items-center justify-between mb-2">
+                                <h4 className="font-semibold text-lg text-gray-800">
+                                    Shirt Measurement
+                                </h4>
+                                <div className="flex items-center gap-2">
                                     <span className={`px-3 py-1 rounded-full text-xs font-medium ${
                                         measurement.status === 'Pending'
                                             ? 'bg-yellow-100 text-yellow-800'
@@ -89,9 +145,6 @@ export default function Measurements() {
                                     }`}
                                     >
                                         {measurement.status}
-                                    </span>
-                                    <span className="text-sm text-gray-500">
-                                        {new Date(measurement.createdAt).toLocaleDateString()}
                                     </span>
                                     <div className="flex gap-2">
                                         <button 
@@ -118,13 +171,17 @@ export default function Measurements() {
                                         </button>
                                     </div>
                                 </div>
-                            <div className="flex items-center justify-between mt-2">
-                                <div className="flex items-center">
-                                    <h4 className="font-semibold text-lg text-gray-800">
-                                        Shirt Measurement
-                                    </h4>
+                            </div>
+                            <div className="flex items-center justify-between mb-2">
+                                <div>
+                                    <span className="text-sm font-medium text-gray-600">Expected Date:</span>
+                                    <span className="text-sm text-gray-900 ml-2">
+                                        {measurement.date ? new Date(measurement.date).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: '2-digit' }) : 'Not set'}
+                                    </span>
                                 </div>
-                                
+                                <span className="text-sm text-gray-500">
+                                    Created: {new Date(measurement.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: '2-digit' })}
+                                </span>
                             </div>
                             <div className="space-y-2 mt-2">
                                 <div className="grid grid-cols-2 gap-4 text-sm">
@@ -182,7 +239,6 @@ export default function Measurements() {
             <div className="container mx-auto px-4 py-8">
                 <h1 className="text-2xl font-bold mb-6">Measurements</h1>
 
-
                 <div className="flex gap-4 mb-4">
                     <div className="w-48">
                         <Button text="Add Shirt" onClick={() => {addShirt() }} />
@@ -208,18 +264,27 @@ export default function Measurements() {
                     </nav>
                 </div>
 
-                {/* Tab Content */}
                 <div className="bg-white rounded-lg shadow">
                     {renderTabContent()}
                 </div>
-                
-                {/* AddShirt Modal */}
-                {isAddShirtModalOpen && (
-                    <AddShirt
-                        customerId={customerId || "default_customer_id"} 
-                        onClose={handleCloseAddShirtModal}
-                        onSuccess={handleAddShirtSuccess}
-                    />
+
+                {(isAddShirtModalOpen || isEditShirtModalOpen) && (
+                    <div>
+                        {isAddShirtModalOpen && (
+                            <AddShirt
+                                customerId={customerId || "default_customer_id"} 
+                                onClose={handleCloseAddShirtModal}
+                                onSuccess={handleAddShirtSuccess}
+                            />
+                        )}
+                        {isEditShirtModalOpen && (
+                            <EditShirt
+                                measurement={editingMeasurement}
+                                onClose={handleCloseEditShirtModal}
+                                onSuccess={handleEditShirtSuccess}
+                            />
+                        )}
+                    </div>
                 )}
             </div>
         </div>
