@@ -102,7 +102,6 @@ const getShirtMeasurementsByDate = async () => {
         // 2️⃣ Get 2 nearest upcoming records
         const upcoming = await ShirtMeasurement.find({
             date: { $gte: currentDate },
-            status: { $in: ['Pending', 'Inprogress'] }
         })
         .sort({ date: 1 })
         .limit(2);

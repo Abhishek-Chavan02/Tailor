@@ -3,6 +3,9 @@ import {
     MEASUREMENT_CREATE_FAIL,
     MEASUREMENT_CREATE_REQUEST,
     MEASUREMENT_CREATE_SUCCESS,
+    MEASUREMENT_GET_BY_DATE_FAIL,
+    MEASUREMENT_GET_BY_DATE_REQUEST,
+    MEASUREMENT_GET_BY_DATE_SUCCESS,
     MEASUREMENT_GET_FAIL,
     MEASUREMENT_GET_REQUEST,
     MEASUREMENT_GET_SUCCESS,
@@ -42,3 +45,21 @@ export const getMeasurementsCustomerId = (customerId) => async (dispatch) => {
         });
     }
 }
+
+export const getMeasurementsByDate = () => async (dispatch) => {
+    try {
+        dispatch({type: MEASUREMENT_GET_BY_DATE_REQUEST});
+        const payload = { action: "getShirtByDate" };
+        const data = await api.post(`/api/shirt-measurements`, payload);
+        dispatch({
+            type: MEASUREMENT_GET_BY_DATE_SUCCESS,
+            payload: data
+        });
+    } catch (err) {
+        dispatch({
+            type: MEASUREMENT_GET_BY_DATE_FAIL,
+            payload: err.message
+        });
+    }
+}
+

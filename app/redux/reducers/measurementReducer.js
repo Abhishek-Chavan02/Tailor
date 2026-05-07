@@ -2,6 +2,9 @@ import {
     MEASUREMENT_CREATE_FAIL,
     MEASUREMENT_CREATE_REQUEST,
     MEASUREMENT_CREATE_SUCCESS,
+    MEASUREMENT_GET_BY_DATE_FAIL,
+    MEASUREMENT_GET_BY_DATE_REQUEST,
+    MEASUREMENT_GET_BY_DATE_SUCCESS,
     MEASUREMENT_GET_FAIL,
     MEASUREMENT_GET_REQUEST,
     MEASUREMENT_GET_SUCCESS,
@@ -10,7 +13,8 @@ import {
 const initialState = {
     loading: false,
     error: null,
-    userMeasurementinfo: null
+    userMeasurementinfo: null,
+    measurementsByDate: null
 };
 
 const measurementReducer = (state = initialState, action) => {
@@ -26,6 +30,12 @@ const measurementReducer = (state = initialState, action) => {
         case MEASUREMENT_CREATE_SUCCESS:
             return { loading: false, success: true };
         case MEASUREMENT_CREATE_FAIL:
+            return { loading: false, error: action.payload };
+        case MEASUREMENT_GET_BY_DATE_REQUEST:
+            return { loading: true };
+        case MEASUREMENT_GET_BY_DATE_SUCCESS:
+            return { loading: false, measurementsByDate: action.payload };
+        case MEASUREMENT_GET_BY_DATE_FAIL:
             return { loading: false, error: action.payload };
         default:
             return state;

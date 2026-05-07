@@ -75,14 +75,14 @@ export default function Home() {
     if (!canRender) return null;
 
     return (<>
-        <div className="w-100 flex gap-2">
-            <div className="flex-1">
+        <div className="w-100 flex gap-2 ml-4">
+            <div className="flex-6">
                 <Input type="text" placeholder="Search" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
             </div>
-            <div className="flex-1">
+            <div className="flex-2">
                 <Button text="Search" onClick={handleSearch} />
             </div>
-            <div className="flex-1">
+            <div className="flex-2">
                 <Button text="Reset" onClick={resetHandle} />
             </div>
         </div>
