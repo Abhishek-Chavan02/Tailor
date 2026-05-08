@@ -12,7 +12,7 @@ export const env = {
 
 
   jwtSecret: process.env.JWT_SECRET ?? null,
-  jwtExpiresIn: process.env.JWT_EXPIRES_IN ?? "7d",
+  jwtExpiresIn: process.env.JWT_EXPIRES_IN ?? "1m",
 
   adminEmail: process.env.ADMIN_EMAIL ?? null,
   adminName: process.env.ADMIN_NAME ?? "Admin",

@@ -3,8 +3,9 @@ import {
     getAllPantMeasurements,
     getPantMeasurementsByStatus,
     getPantMeasurementsByCustomerId,
-    updatePantMeasurementStatus,
-    deletePantMeasurement
+    updatePantMeasurement,
+    deletePantMeasurement,
+    getPantMeasurementsByDate
 } from '../services/pantMeasurementService';
 
 export async function createPantMeasurementController(data) {
@@ -35,11 +36,30 @@ export async function getPantMeasurementsByStatusController(data) {
     }
 }
 
-export async function updatePantMeasurementStatusController(data) {
+export async function updatePantMeasurementController(data) {
     try {
-        const { id, status } = data;
-        const measurement = await updatePantMeasurementStatus(id, status);
+        const { id, ...updateData } = data;
+        const measurement = await updatePantMeasurement(id, updateData);
         return { success: true, measurement };
+    } catch (error) {
+        return { success: false, message: error.message };
+    }
+}
+
+export async function getPantMeasurementsByCustomerIdController(data) {
+    try {
+        const { customerId } = data;
+        const measurements = await getPantMeasurementsByCustomerId(customerId);
+        return { success: true, measurements };
+    } catch (error) {
+        return { success: false, message: error.message };
+    }
+}
+
+export async function getPantMeasurementsByDateController() {
+    try {
+        const measurements = await getPantMeasurementsByDate();
+        return { success: true, measurements };
     } catch (error) {
         return { success: false, message: error.message };
     }

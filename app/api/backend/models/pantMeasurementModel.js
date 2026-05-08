@@ -2,49 +2,58 @@ import mongoose from 'mongoose';
 
 const pantMeasurementSchema = new mongoose.Schema({
     customerId: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
+    waist: {
+        type: Number,
+        required: true
+    },
+    hip: {
+        type: Number,
+        required: true
+    },
+    thigh: {
+        type: Number,
+        required: true
+    },
+    knee: {
+        type: Number,
+        required: true
+    },
+    length: {
+        type: Number,
+        required: true
+    },
+    bottom: {
+        type: Number,
         required: true
     },
     date: {
         type: Date,
-        default: Date.now
+        required: true
     },
     status: {
         type: String,
         enum: ['Pending', 'Inprogress', 'Done'],
         default: 'Pending'
     },
-    // Pant (Lower Body) measurements
-    waist: {
-        type: Number,
-        required: false
+    createdAt: {
+        type: Date,
+        default: Date.now
     },
-    hip: {
-        type: Number,
-        required: false
-    },
-    thigh: {
-        type: Number,
-        required: false
-    },
-    knee: {
-        type: Number,
-        required: false
-    },
-    bottom: {
-        type: Number,
-        required: false
-    },
-    inseam: {
-        type: Number,
-        required: false
-    },
-    outseam: {
-        type: Number,
-        required: false
+    updatedAt: {
+        type: Date,
+        default: Date.now
     }
 }, {
     timestamps: true
+});
+
+pantMeasurementSchema.pre('save', function(next) {
+    this.updatedAt = Date.now();
+    next();
 });
 
 // Prevent OverwriteModelError in Next.js dev/hot-reload.

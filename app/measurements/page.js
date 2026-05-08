@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import AddShirt from '../components/addShirt';
+import AddPant from '../components/addPant';
 import EditShirt from '../components/editShirt';
 import Button from '../components/button';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
@@ -13,6 +14,7 @@ export default function Measurements() {
     const customerId = searchParams.get('customerId');
     const [activeTab, setActiveTab] = useState('pending');
     const [isAddShirtModalOpen, setIsAddShirtModalOpen] = useState(false);
+    const [isAddPantModalOpen, setIsAddPantModalOpen]= useState(false);
     const [isEditShirtModalOpen, setIsEditShirtModalOpen] = useState(false);
     const [editingMeasurement, setEditingMeasurement] = useState(null);
     const dispatch = useAppDispatch();
@@ -54,7 +56,21 @@ export default function Measurements() {
 
     const handleEditShirtSuccess = () => {
         console.log("Shirt measurement updated successfully");
-        // Refresh the measurements data
+        if (customerId) {
+            dispatch(getMeasurementsCustomerId(customerId));
+        }
+    };
+
+    const addPant = () => {
+        setIsAddPantModalOpen(true);
+    };
+
+    const handleCloseAddPantModal = () => {
+        setIsAddPantModalOpen(false);
+    };
+
+    const handleAddPantSuccess = () => {
+        console.log("Pant measurement added successfully");
         if (customerId) {
             dispatch(getMeasurementsCustomerId(customerId));
         }
@@ -241,10 +257,20 @@ export default function Measurements() {
 
                 <div className="flex gap-4 mb-4">
                     <div className="w-48">
-                        <Button text="Add Shirt" onClick={() => {addShirt() }} />
+                        <button 
+                            onClick={() => {addShirt() }}
+                            className="w-full px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                        >
+                            Add Shirt
+                        </button>
                     </div>
                     <div className="w-48">
-                        <Button text="Add Pant" onClick={() => { }} />
+                        <button 
+                            onClick={() => {addPant() }}
+                            className="w-full px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                        >
+                            Add Pant
+                        </button>
                     </div>
                 </div>
                 <div className="border-b border-gray-200 mb-6">
@@ -268,13 +294,20 @@ export default function Measurements() {
                     {renderTabContent()}
                 </div>
 
-                {(isAddShirtModalOpen || isEditShirtModalOpen) && (
+                {(isAddShirtModalOpen || isAddPantModalOpen || isEditShirtModalOpen) && (
                     <div>
                         {isAddShirtModalOpen && (
                             <AddShirt
                                 customerId={customerId || "default_customer_id"} 
                                 onClose={handleCloseAddShirtModal}
                                 onSuccess={handleAddShirtSuccess}
+                            />
+                        )}
+                        {isAddPantModalOpen && (
+                            <AddPant
+                                customerId={customerId || "default_customer_id"}
+                                onClose={handleCloseAddPantModal}
+                                onSuccess={handleAddPantSuccess}
                             />
                         )}
                         {isEditShirtModalOpen && (

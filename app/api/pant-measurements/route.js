@@ -4,8 +4,9 @@ import {
     getAllPantMeasurementsController,
     getPantMeasurementsByStatusController,
     getPantMeasurementsByCustomerIdController,
-    updatePantMeasurementStatusController,
-    deletePantMeasurementController
+    updatePantMeasurementController,
+    deletePantMeasurementController,
+    getPantMeasurementsByDateController
 } from '../backend/controllers/pantMeasurementController';
 
 export async function POST(request) {
@@ -30,12 +31,20 @@ export async function POST(request) {
                     return NextResponse.json(statusResult, { status: 400 });
                 }
 
-            case 'updateStatus':
-                const updateResult = await updatePantMeasurementStatusController(body);
+            case 'update':
+                const updateResult = await updatePantMeasurementController(body);
                 if (updateResult.success) {
                     return NextResponse.json(updateResult, { status: 200 });
                 } else {
                     return NextResponse.json(updateResult, { status: 400 });
+                }
+
+            case 'getPantByDate':
+                const dateResult = await getPantMeasurementsByDateController();
+                if (dateResult.success) {
+                    return NextResponse.json(dateResult, { status: 200 });
+                } else {
+                    return NextResponse.json(dateResult, { status: 400 });
                 }
 
             case 'getByCustomerId':
