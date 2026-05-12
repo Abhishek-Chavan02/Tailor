@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { requireAuth } from '../backend/middleware/authMiddleware';
 import {
     createShirtMeasurementController,
     getAllShirtMeasurementsController,
@@ -11,6 +12,7 @@ import {
 
 export async function POST(request) {
     try {
+        requireAuth(request);
         const body = await request.json();
         const { action } = body;
 

@@ -1,8 +1,28 @@
+import { clearAuthStorage, getAuthToken, isTokenExpired } from "./auth";
+
+function handleUnauthorized() {
+  clearAuthStorage();
+  if (typeof window !== "undefined" && window.location.pathname !== "/login") {
+    window.location.replace("/login");
+  }
+}
+
 // API utility for making HTTP requests
 export const apiRequest = async (url, options = {}) => {
+  const token = getAuthToken();
+  const isPublicAuthRoute = typeof url === "string" && url.startsWith("/api/auth/login");
+  if (token && isTokenExpired(token)) {
+    clearAuthStorage();
+    if (!isPublicAuthRoute) {
+      handleUnauthorized();
+      throw new Error("Token expired");
+    }
+  }
+
   const defaultOptions = {
     headers: {
       'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
   };
 
@@ -17,6 +37,11 @@ export const apiRequest = async (url, options = {}) => {
 
   try {
     const response = await fetch(url, config);
+
+    if (response.status === 401) {
+      handleUnauthorized();
+      throw new Error("Unauthorized");
+    }
     
     // Check if response is ok
     if (!response.ok) {

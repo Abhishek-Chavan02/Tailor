@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { requireAuth } from '../backend/middleware/authMiddleware';
 import {
     createMeasurementController,
     getAllMeasurementsController,
@@ -9,6 +10,7 @@ import {
 
 export async function POST(request) {
     try {
+        requireAuth(request);
         const body = await request.json();
         const { action } = body;
 
@@ -53,8 +55,9 @@ export async function POST(request) {
     }
 }
 
-export async function GET() {
+export async function GET(request) {
     try {
+        requireAuth(request);
         const result = await getAllMeasurementsController();
         if (result.success) {
             return NextResponse.json(result, { status: 200 });

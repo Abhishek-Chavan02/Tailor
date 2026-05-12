@@ -1,7 +1,7 @@
 import { verifyAuthToken } from "../services/authService";
 
 export function getBearerToken(request) {
-  const header = request.headers.get("authorization") || request.headers.get("Authorization");
+  const header =  request.headers.get("Authorization");
   if (!header) return null;
   const [type, token] = header.split(" ");
   if (type !== "Bearer" || !token) return null;

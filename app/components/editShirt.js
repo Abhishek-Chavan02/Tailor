@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import Input from './input';
 import Button from './button';
+import { api } from '../utils/api';
 
 export default function EditShirt({ measurement, onClose, onSuccess }) {
     const [formData, setFormData] = useState({
@@ -53,19 +54,11 @@ export default function EditShirt({ measurement, onClose, onSuccess }) {
         setError('');
 
         try {
-            const response = await fetch('/api/shirt-measurements', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    action: 'update',
-                    id: measurement._id,
-                    ...formData
-                })
+            const data = await api.post('/api/shirt-measurements', {
+                action: 'update',
+                id: measurement._id,
+                ...formData
             });
-
-            const data = await response.json();
 
             if (data.success) {
                 onSuccess && onSuccess();

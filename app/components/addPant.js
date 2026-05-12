@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import Input from './input';
 import Button from './button';
+import { api } from '../utils/api';
 
 export default function AddPant({ customerId, onClose, onSuccess }) {
     const [formData, setFormData] = useState({
@@ -33,19 +34,11 @@ export default function AddPant({ customerId, onClose, onSuccess }) {
         setError('');
 
         try {
-            const response = await fetch('/api/pant-measurements', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    action: 'create',
-                    customerId,
-                    ...formData
-                })
+            const data = await api.post('/api/pant-measurements', {
+                action: 'create',
+                customerId,
+                ...formData
             });
-
-            const data = await response.json();
 
             if (data.success) {
                 onSuccess && onSuccess();

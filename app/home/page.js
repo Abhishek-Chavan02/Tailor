@@ -35,7 +35,7 @@ export default function Home() {
 
     useEffect(() => {
         if (updatedUser && !updateLoading) {
-            dispatch(getAllUsers()); // Refresh the list after successful update
+            dispatch(getAllUsers()); 
         }
     }, [updatedUser, updateLoading, dispatch]);
 

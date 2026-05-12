@@ -120,6 +120,7 @@ const deletePantMeasurement = async (id) => {
 };
 
 const getPantMeasurementsByCustomerId = async (customerId) => {
+    console.log('customerIddd: ', customerId);
     try {
         await connectDB();
         const measurements = await PantMeasurement.find({ customerId })

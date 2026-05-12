@@ -5,9 +5,10 @@ import Image from 'next/image';
 import AddShirt from '../components/addShirt';
 import AddPant from '../components/addPant';
 import EditShirt from '../components/editShirt';
-import Button from '../components/button';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
-import { getMeasurementsCustomerId } from "../redux/actions/measurementAction";
+import { getShirtMeasurementsCustomerId } from "../redux/actions/measurementAction";
+import {getPantMeasurementsCustomerId} from "../redux/actions/measurementAction"
+import { api } from '../utils/api';
 
 export default function Measurements() {
     const searchParams = useSearchParams();
@@ -28,9 +29,14 @@ export default function Measurements() {
         { id: 'Done', label: 'Done' }
     ];
     useEffect(() => {
-        if (!customerId) return;
-        dispatch(getMeasurementsCustomerId(customerId));
-    }, [customerId, dispatch]);
+       
+        dispatch(getShirtMeasurementsCustomerId(customerId));
+    }, []);
+
+    useEffect(()=>{
+      
+        dispatch(getPantMeasurementsCustomerId(customerId));
+    }, []);
 
     const addShirt = () => {
         setIsAddShirtModalOpen(true);
@@ -57,7 +63,7 @@ export default function Measurements() {
     const handleEditShirtSuccess = () => {
         console.log("Shirt measurement updated successfully");
         if (customerId) {
-            dispatch(getMeasurementsCustomerId(customerId));
+            dispatch(getShirtMeasurementsCustomerId(customerId));
         }
     };
 
@@ -70,32 +76,23 @@ export default function Measurements() {
     };
 
     const handleAddPantSuccess = () => {
-        console.log("Pant measurement added successfully");
         if (customerId) {
-            dispatch(getMeasurementsCustomerId(customerId));
+            dispatch(getShirtMeasurementsCustomerId(customerId));
         }
     };
 
     const handleDeleteMeasurement = async (measurement) => {
         if (window.confirm('Are you sure you want to delete this measurement?')) {
             try {
-                const response = await fetch('/api/shirt-measurements', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        action: 'delete',
-                        id: measurement._id
-                    })
+                const data = await api.post('/api/shirt-measurements', {
+                    action: 'delete',
+                    id: measurement._id
                 });
-
-                const data = await response.json();
 
                 if (data.success) {
                     console.log("Measurement deleted successfully");
                     if (customerId) {
-                        dispatch(getMeasurementsCustomerId(customerId));
+                        dispatch(getShirtMeasurementsCustomerId(customerId));
                     }
                 } else {
                     alert('Failed to delete measurement: ' + (data.message || 'Unknown error'));

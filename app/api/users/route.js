@@ -1,9 +1,13 @@
 import { NextResponse } from "next/server";
 import { createUserController, deleteUserController, findUserByEmailController, getAllUsersController, updateUserController } from "../backend/controllers/userController";
+import { requireAuth } from "../backend/middleware/authMiddleware";
 
 export async function POST(request) {
   try {
     const { action, ...data } = await request.json();
+    if (action !== "create" && action !== "find") {
+      requireAuth(request);
+    }
     
     switch (action) {
       case "create":
@@ -20,7 +24,7 @@ export async function POST(request) {
         return NextResponse.json({ error: "Invalid action" }, { status: 400 });
     }
   } catch (error) {
-    return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
+    return NextResponse.json({ error: error?.message ?? "Unauthorized" }, { status: error?.status ?? 400 });
   }
 }
 
