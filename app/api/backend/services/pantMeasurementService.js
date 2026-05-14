@@ -104,6 +104,25 @@ const getPantMeasurementsByDate = async () => {
     }
 };
 
+const updatePantMeasurement = async (id, updateData) => {
+    try {
+        await connectDB();
+        const measurement = await PantMeasurement.findByIdAndUpdate(
+            id,
+            updateData,
+            { new: true, runValidators: true }
+        );
+        
+        if (!measurement) {
+            throw new Error('Pant measurement not found');
+        }
+        
+        return measurement;
+    } catch (error) {
+        throw new Error(`Error updating pant measurement: ${error.message}`);
+    }
+};
+
 const deletePantMeasurement = async (id) => {
     try {
         await connectDB();
@@ -139,5 +158,5 @@ export {
     getPantMeasurementsByCustomerId,
     getPantMeasurementsByDate,
     updatePantMeasurementStatus,
-
+    updatePantMeasurement,
 };

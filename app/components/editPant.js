@@ -1,10 +1,10 @@
 "use client";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { api } from '../utils/api';
 import Input from './input';
 import Button from './button';
-import { api } from '../utils/api';
 
-export default function AddPant({ customerId, onClose, onSuccess }) {
+export default function EditPant({ measurement, onClose, onSuccess }) {
     const [formData, setFormData] = useState({
         waist: '',
         hip: '',
@@ -12,12 +12,27 @@ export default function AddPant({ customerId, onClose, onSuccess }) {
         knee: '',
         bottom: '',
         length: '',
-        date: new Date().toISOString().split('T')[0], // Default to today's date
+        date: '',
         status: 'Pending'
     });
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+
+    useEffect(() => {
+        if (measurement) {
+            setFormData({
+                waist: measurement.waist || '',
+                hip: measurement.hip || '',
+                thigh: measurement.thigh || '',
+                knee: measurement.knee || '',
+                bottom: measurement.bottom || '',
+                length: measurement.length || '',
+                date: measurement.date ? new Date(measurement.date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+                status: measurement.status || 'Pending'
+            });
+        }
+    }, [measurement]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -34,8 +49,8 @@ export default function AddPant({ customerId, onClose, onSuccess }) {
 
         try {
             const data = await api.post('/api/pant-measurements', {
-                action: 'create',
-                customerId,
+                action: 'update',
+                id: measurement._id,
                 ...formData
             });
 
@@ -43,7 +58,7 @@ export default function AddPant({ customerId, onClose, onSuccess }) {
                 onSuccess && onSuccess();
                 onClose && onClose();
             } else {
-                setError(data.message || 'Failed to create pant measurement');
+                setError(data.message || 'Failed to update pant measurement');
             }
         } catch (err) {
             setError('Network error. Please try again.');
@@ -59,7 +74,7 @@ export default function AddPant({ customerId, onClose, onSuccess }) {
     return (
         <div className="fixed inset-0 backdrop-blur-sm flex items-center justify-center z-50">
             <div className="bg-white p-6 rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-                <h2 className="text-xl font-bold mb-6">Add Pant Measurement</h2>
+                <h2 className="text-xl font-bold mb-6">Edit Pant Measurement</h2>
                 
                 {error && (
                     <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
@@ -171,7 +186,7 @@ export default function AddPant({ customerId, onClose, onSuccess }) {
                     <div className="flex gap-3 mt-6">
                         <Button
                             type="submit"
-                            text={loading ? 'Creating...' : 'Create Measurement'}
+                            text={loading ? 'Updating...' : 'Update Measurement'}
                             disabled={loading}
                             className="flex-1"
                         />

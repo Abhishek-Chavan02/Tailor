@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import Image from "next/image";
 import Input from "../components/input";
@@ -9,17 +9,26 @@ import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { login } from "../redux/actions/authAction";
 import Link from "next/link";
 import { isLoggedIn } from "../utils/auth";
+import Swal from "sweetalert2";
 
 export default function Login() {
-
   const router = useRouter();
   const dispatch = useAppDispatch();
   const { userInfo, loading } = useAppSelector((state) => state.userLogin);
+  console.log("loading: ", loading);
   const [canRender, setCanRender] = useState(false);
   const [formError, setFormError] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  if (loading == true) {
+    Swal.fire({
+      title: "Success!",
+      text: "Login successfully",
+      icon: "success",
+      confirmButtonText: "OK",
+    });
+  }
   useLayoutEffect(() => {
     if (isLoggedIn()) {
       router.replace("/home");
@@ -56,8 +65,9 @@ export default function Login() {
       <div className="absolute inset-0 flex items-center justify-center">
         {" "}
         <div className=" p-8 rounded-2xl shadow-lg w-80">
-          <h2 className="text-4xl text-red-100 font-bold mb-8 text-center">Login</h2>
-
+          <h2 className="text-4xl text-red-100 font-bold mb-8 text-center">
+            Login
+          </h2>
 
           <Input
             placeholder="Email"
@@ -78,10 +88,7 @@ export default function Login() {
               {formError}
             </p>
           ) : null}
-          <Button
-            text="Login"
-            onClick={() => handleLogin()}
-          />
+          <Button text="Login" onClick={() => handleLogin()} />
 
           <p className="text-center mt-4 text-red-100">
             Don't have an account?{" "}

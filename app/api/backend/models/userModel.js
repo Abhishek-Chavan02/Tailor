@@ -46,7 +46,8 @@ const userSchema = new mongoose.Schema({
 
 
 // Prevent OverwriteModelError in Next.js dev/hot-reload.
-export const User = mongoose.models.User || mongoose.model("User", userSchema);
+const User = mongoose.models.User || mongoose.model("User", userSchema);
+export default User;
 
 export function getAdminUser() {
   return {

@@ -7,38 +7,69 @@ import Image from 'next/image';
 export default function List() {
     const dispatch = useAppDispatch();
     const measurementsByDate = useAppSelector((state) => state.customerMeasurement.measurementsByDate);
-    const [activeTab, setActiveTab] = useState('all');
+    const [activeTab, setActiveTab] = useState('pending');
+    
     
     useEffect(() => {
         dispatch(getMeasurementsByDate());
     }, []);
 
-    // Filter measurements based on tab
-    const filterMeasurements = (measurements, tab) => {
-        if (!measurements) return [];
-        
-        const currentDate = new Date();
-        currentDate.setHours(0, 0, 0, 0);
-        
-        switch (tab) {
-            case 'pending':
-                return measurements.filter(m => m.status === 'Pending');
-            case 'inprogress':
-                return measurements.filter(m => m.status === 'Inprogress');
-            case 'done':
-                return measurements.filter(m => m.status === 'Done');
-            case 'delayed':
-                return measurements.filter(m => {
-                    const measurementDate = new Date(m.date);
-                    measurementDate.setHours(0, 0, 0, 0);
-                    return measurementDate < currentDate && (m.status === 'Pending' || m.status === 'Inprogress');
-                });
-            case 'all':
-            default:
-                return measurements;
-        }
-    };
+    // Debug: Log the measurements data
+    console.log('Measurements data:', measurementsByDate);
+    console.log('Filtered measurements for tab:', activeTab, filterMeasurements(measurementsByDate?.measurements, activeTab));
 
+    // Filter measurements based on tab
+ const filterMeasurements = (measurements, tab) => {
+    if (!measurements) return [];
+
+    const currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0);
+
+    switch (tab) {
+
+        case 'pending':
+            return measurements.filter(m => {
+                const measurementDate = new Date(m.date);
+                measurementDate.setHours(0, 0, 0, 0);
+
+                // Pending but NOT delayed
+                return (
+                    m.status === 'Pending' &&
+                    measurementDate >= currentDate
+                );
+            });
+
+        case 'inprogress':
+            return measurements.filter(m => {
+                const measurementDate = new Date(m.date);
+                measurementDate.setHours(0, 0, 0, 0);
+
+                // Inprogress but NOT delayed
+                return (
+                    m.status === 'Inprogress' &&
+                    measurementDate >= currentDate
+                );
+            });
+
+        case 'done':
+            return measurements.filter(m => m.status === 'Done');
+
+        case 'delayed':
+            return measurements.filter(m => {
+                const measurementDate = new Date(m.date);
+                measurementDate.setHours(0, 0, 0, 0);
+
+                return (
+                    measurementDate < currentDate &&
+                    (m.status === 'Pending' || m.status === 'Inprogress')
+                );
+            });
+
+        case 'all':
+        default:
+            return measurements;
+    }
+};
     const filteredMeasurements = filterMeasurements(measurementsByDate?.measurements, activeTab);
 
     return (

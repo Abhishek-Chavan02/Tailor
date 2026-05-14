@@ -1,6 +1,6 @@
 import ShirtMeasurement from '../models/shirtMeasurementModel';
 import { connectDB } from '../db/mongo';
-import { User } from '../models/userModel';
+import  User  from '../models/userModel';
 
 const createShirtMeasurement = async (measurementData) => {
     try {

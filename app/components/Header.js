@@ -4,14 +4,39 @@ import Link from "next/link";
 import {  useRouter } from "next/navigation";
 import { useAppDispatch } from "../redux/hooks";
 import { logout } from "../redux/actions/authAction";
+import Swal from 'sweetalert2';
+import 'sweetalert2/dist/sweetalert2.min.css';
 
 export default function Header() {
   const router = useRouter();
   const dispatch = useAppDispatch();
 
   async function handleLogout() {
-    await dispatch(logout());
-    router.replace("/login");
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: "You want to logout from your account!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, logout!'
+    });
+
+    if (result.isConfirmed) {
+      await dispatch(logout());
+      
+      Swal.fire({
+        title: 'Logged Out!',
+        text: 'You have been successfully logged out.',
+        icon: 'success',
+        timer: 2000,
+        showConfirmButton: false
+      });
+      
+      setTimeout(() => {
+        router.replace("/login");
+      }, 2000);
+    }
   }
 
 

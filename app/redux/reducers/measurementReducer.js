@@ -5,9 +5,6 @@ import {
     MEASUREMENT_GET_BY_DATE_FAIL,
     MEASUREMENT_GET_BY_DATE_REQUEST,
     MEASUREMENT_GET_BY_DATE_SUCCESS,
-    PANT_MEASUREMENT_GET_FAIL,
-    PANT_MEASUREMENT_GET_REQUEST,
-    PANT_MEASUREMENT_GET_SUCCESS,
     SHIRT_MEASUREMENT_GET_FAIL,
     SHIRT_MEASUREMENT_GET_REQUEST,
     SHIRT_MEASUREMENT_GET_SUCCESS,
@@ -40,12 +37,6 @@ const measurementReducer = (state = initialState, action) => {
             return { loading: false, measurementsByDate: action.payload };
         case MEASUREMENT_GET_BY_DATE_FAIL:
             return { loading: false, error: action.payload };
-       case PANT_MEASUREMENT_GET_REQUEST:
-        return{loading:true};
-        case PANT_MEASUREMENT_GET_SUCCESS:
-            return{loading:false, userMeasurementinfo: action.payload };
-        case PANT_MEASUREMENT_GET_FAIL:
-            return{ loading: false, error: action.payload};
         default:
             return state;
     }

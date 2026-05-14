@@ -9,9 +9,6 @@ import {
   SHIRT_MEASUREMENT_GET_FAIL,
   SHIRT_MEASUREMENT_GET_REQUEST,
   SHIRT_MEASUREMENT_GET_SUCCESS,
-  PANT_MEASUREMENT_GET_REQUEST,
-  PANT_MEASUREMENT_GET_SUCCESS,
-  PANT_MEASUREMENT_GET_FAIL
 } from "../constant";
 
 export const createMeasurement = (formdata) => async (dispatch) => {
@@ -49,26 +46,6 @@ export const getShirtMeasurementsCustomerId =
     }
   };
 
-export const getPantMeasurementsCustomerId =
-  (customerId) => async (dispatch) => {
-    try {
-      dispatch({
-        type: PANT_MEASUREMENT_GET_REQUEST,
-      });
-
-      const payload = { action: "getByCustomerId", customerId };
-      const data = await api.get(`/api/pant-measurements`, payload);
-      dispatch({
-        type: PANT_MEASUREMENT_GET_SUCCESS,
-        payload: data,
-      });
-    } catch (err) {
-      dispatch({
-        type: PANT_MEASUREMENT_GET_FAIL,
-        payload: err.message,
-      });
-    }
-  };
 
 export const getMeasurementsByDate = () => async (dispatch) => {
   try {

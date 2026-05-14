@@ -51,9 +51,8 @@ const pantMeasurementSchema = new mongoose.Schema({
     timestamps: true
 });
 
-pantMeasurementSchema.pre('save', function(next) {
-    this.updatedAt = Date.now();
-    next();
+pantMeasurementSchema.pre('save', function() {
+    this.updatedAt = new Date();
 });
 
 // Prevent OverwriteModelError in Next.js dev/hot-reload.

@@ -1,5 +1,5 @@
 import bcrypt from "bcryptjs";
-import { User } from "../models/userModel";
+import User from "../models/userModel";
 import { connectDB } from "../db/mongo";
 
 export async function createUser({ name, lastName, email, password, phone, role }) {
