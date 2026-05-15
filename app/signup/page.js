@@ -1,11 +1,11 @@
-'use client'
+"use client";
 import Image from "next/image";
 import Button from "../components/button";
 import Input from "../components/input";
 import { useRouter } from "next/navigation";
 import { useLayoutEffect, useState } from "react";
 import { signup } from "../redux/actions/authAction";
-import { useAppDispatch } from "../redux/hooks";
+import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import Link from "next/link";
 import { isLoggedIn } from "../utils/auth";
 
@@ -19,10 +19,8 @@ export default function Signup() {
   const [password, setPassword] = useState("");
   const [phone, setPhone] = useState("");
   const [role, setRole] = useState("");
-  const roleOptions = [
-    { value: 'user', label: 'User' },
-    { value: 'admin', label: 'Admin' }
-  ];
+  const{signupInfo, loading, error} = useAppSelector((state) => state.userLogin);
+  
 
   useLayoutEffect(() => {
     if (isLoggedIn()) {
@@ -40,7 +38,6 @@ export default function Signup() {
   if (!canRender) return null;
 
   return (
-
     <div className="relative h-screen w-screen">
       <Image src="/login img.jpg" alt="login" fill className="object-cover" />
 
@@ -49,7 +46,9 @@ export default function Signup() {
       <div className="absolute inset-0 flex items-center justify-center">
         {" "}
         <div className=" p-8 rounded-2xl shadow-lg w-80">
-          <h2 className="text-4xl text-red-100 font-bold mb-8 text-center">Signup</h2>
+          <h2 className="text-4xl text-red-100 font-bold mb-8 text-center">
+            Signup
+          </h2>
 
           <Input
             placeholder="First Name"
@@ -79,14 +78,6 @@ export default function Signup() {
             onChange={(e) => setPhone(e.target.value)}
           />
 
-          {/* <Dropdown
-            options={roleOptions}
-            placeholder="Select Role"
-            value={role}
-            onChange={(value) => setRole(value)}
-            className="mb-4"
-          /> */}
-
           <Input
             placeholder="Password"
             type="password"
@@ -94,11 +85,7 @@ export default function Signup() {
             onChange={(e) => setPassword(e.target.value)}
           />
 
-
-          <Button
-            text="Signup"
-            onClick={() => handleSignup()}
-          />
+          <Button text="Signup" onClick={() => handleSignup()} />
 
           <p className="text-center mt-4 text-red-100">
             Don't have an account?{" "}

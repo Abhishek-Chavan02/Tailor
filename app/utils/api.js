@@ -60,9 +60,6 @@ export const apiRequest = async (url, options = {}) => {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error('API request failed:', error);
-    console.error('Request URL:', url);
-    console.error('Request config:', config);
     throw error;
   }
 };

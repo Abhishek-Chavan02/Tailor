@@ -14,21 +14,14 @@ import Swal from "sweetalert2";
 export default function Login() {
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const { userInfo, loading } = useAppSelector((state) => state.userLogin);
-  console.log("loading: ", loading);
+  const { userInfo, loading} = useAppSelector((state) => state.userLogin);
+  console.log('loading: ', loading);
   const [canRender, setCanRender] = useState(false);
   const [formError, setFormError] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  if (loading == true) {
-    Swal.fire({
-      title: "Success!",
-      text: "Login successfully",
-      icon: "success",
-      confirmButtonText: "OK",
-    });
-  }
+
   useLayoutEffect(() => {
     if (isLoggedIn()) {
       router.replace("/home");
