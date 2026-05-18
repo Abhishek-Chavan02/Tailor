@@ -72,7 +72,7 @@ const getPantMeasurementsByDate = async () => {
             date: { $gte: currentDate },
         })
         .sort({ date: 1 })
-        .limit(2);
+        .limit(10);
 
         // 3️⃣ Merge results
         const result = [...overdue, ...upcoming];

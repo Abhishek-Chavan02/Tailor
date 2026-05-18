@@ -6,6 +6,9 @@ import {
   MEASUREMENT_GET_BY_DATE_FAIL,
   MEASUREMENT_GET_BY_DATE_REQUEST,
   MEASUREMENT_GET_BY_DATE_SUCCESS,
+  MEASUREMENT_LIST_FAIL,
+  MEASUREMENT_LIST_REQUEST,
+  MEASUREMENT_LIST_SUCCESS,
   SHIRT_MEASUREMENT_GET_FAIL,
   SHIRT_MEASUREMENT_GET_REQUEST,
   SHIRT_MEASUREMENT_GET_SUCCESS,
@@ -63,3 +66,37 @@ export const getMeasurementsByDate = () => async (dispatch) => {
     });
   }
 };
+
+const DEFAULT_LIST_PAGE_SIZE = 12;
+
+export const getMeasurementList =
+  ({ tab = "all", page = 1, limit = DEFAULT_LIST_PAGE_SIZE } = {}) =>
+  async (dispatch) => {
+    try {
+      dispatch({ type: MEASUREMENT_LIST_REQUEST });
+      const data = await api.post("/api/measurement-list", {
+        tab,
+        page,
+        limit,
+      });
+      if (!data.success) {
+        dispatch({
+          type: MEASUREMENT_LIST_FAIL,
+          payload: data.message || "Failed to load list",
+        });
+        return;
+      }
+      dispatch({
+        type: MEASUREMENT_LIST_SUCCESS,
+        payload: {
+          measurements: data.measurements,
+          pagination: data.pagination,
+        },
+      });
+    } catch (err) {
+      dispatch({
+        type: MEASUREMENT_LIST_FAIL,
+        payload: err.message,
+      });
+    }
+  };

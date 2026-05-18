@@ -1,5 +1,6 @@
 const initialState = {
     users: [],
+    pagination: null,
     loading: false,
     error: null,
 };
@@ -15,7 +16,8 @@ export const getAllUsersReducer = (state = initialState, action) => {
             return {
                 ...state,
                 loading: false,
-                users: action.payload.users,
+                users: action.payload.users ?? [],
+                pagination: action.payload.pagination ?? null,
             };
         case "USER_GET_ALL_FAIL":
             return {

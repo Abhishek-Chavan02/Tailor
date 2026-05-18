@@ -54,21 +54,64 @@ export async function findUserByEmail(email) {
   return user;
 }
 
-export async function getAllUsers(search = "") {
-  await connectDB(); 
-  let query ={};
-  if(search){
-    query={
+const userListProjection = { passwordHash: 0 };
+
+export async function getAllUsers(search = "", pagination = null) {
+  await connectDB();
+  let query = {};
+  if (search) {
+    query = {
       $or: [
-        { name: { $regex: search, $options: 'i' } },
-        { lastName: { $regex: search, $options: 'i' } },
-        { email: { $regex: search, $options: 'i' } },
-        { phone: { $regex: search, $options: 'i' } }
-      ]
-    }
+        { name: { $regex: search, $options: "i" } },
+        { lastName: { $regex: search, $options: "i" } },
+        { email: { $regex: search, $options: "i" } },
+        { phone: { $regex: search, $options: "i" } },
+      ],
+    };
   }
-  const users = await User.find(query);
-  return users;
+
+  const hasPaging =
+    pagination &&
+    pagination.page != null &&
+    pagination.limit != null;
+
+  if (hasPaging) {
+    const page = Math.max(1, parseInt(String(pagination.page), 10) || 1);
+    const limit = Math.min(100, Math.max(1, parseInt(String(pagination.limit), 10) || 10));
+    const skip = (page - 1) * limit;
+    const [users, total] = await Promise.all([
+      User.find(query)
+        .select(userListProjection)
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .lean(),
+      User.countDocuments(query),
+    ]);
+    return {
+      users,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: total === 0 ? 0 : Math.ceil(total / limit),
+      },
+    };
+  }
+
+  const users = await User.find(query)
+    .select(userListProjection)
+    .sort({ createdAt: -1 })
+    .lean();
+  return {
+    users,
+    pagination: {
+      page: 1,
+      limit: users.length,
+      total: users.length,
+      totalPages: users.length ? 1 : 0,
+    },
+  };
 }
 
 

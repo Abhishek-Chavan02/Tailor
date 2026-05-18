@@ -5,6 +5,9 @@ import {
     MEASUREMENT_GET_BY_DATE_FAIL,
     MEASUREMENT_GET_BY_DATE_REQUEST,
     MEASUREMENT_GET_BY_DATE_SUCCESS,
+    MEASUREMENT_LIST_FAIL,
+    MEASUREMENT_LIST_REQUEST,
+    MEASUREMENT_LIST_SUCCESS,
     SHIRT_MEASUREMENT_GET_FAIL,
     SHIRT_MEASUREMENT_GET_REQUEST,
     SHIRT_MEASUREMENT_GET_SUCCESS,
@@ -14,7 +17,10 @@ const initialState = {
     loading: false,
     error: null,
     userMeasurementinfo: null,
-    measurementsByDate: null
+    measurementsByDate: null,
+    measurementList: null,
+    measurementListLoading: false,
+    measurementListError: null,
 };
 
 const measurementReducer = (state = initialState, action) => {
@@ -37,6 +43,25 @@ const measurementReducer = (state = initialState, action) => {
             return { loading: false, measurementsByDate: action.payload };
         case MEASUREMENT_GET_BY_DATE_FAIL:
             return { loading: false, error: action.payload };
+        case MEASUREMENT_LIST_REQUEST:
+            return {
+                ...state,
+                measurementListLoading: true,
+                measurementListError: null,
+            };
+        case MEASUREMENT_LIST_SUCCESS:
+            return {
+                ...state,
+                measurementListLoading: false,
+                measurementList: action.payload,
+                measurementListError: null,
+            };
+        case MEASUREMENT_LIST_FAIL:
+            return {
+                ...state,
+                measurementListLoading: false,
+                measurementListError: action.payload,
+            };
         default:
             return state;
     }

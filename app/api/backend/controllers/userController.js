@@ -56,10 +56,13 @@ export async function findUserByEmailController(request) {
 export async function getAllUsersController(data) {
   try {
     const search = data?.search || "";
+    const { page, limit } = data || {};
+    const pagination =
+      page != null && limit != null ? { page, limit } : null;
 
-    const users = await getAllUsers(search);
+    const result = await getAllUsers(search, pagination);
 
-    return NextResponse.json({ users }, { status: 200 });
+    return NextResponse.json(result, { status: 200 });
   } catch (error) {
     return NextResponse.json({ message: error.message }, { status: 500 });
   }
