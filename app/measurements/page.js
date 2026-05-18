@@ -21,6 +21,8 @@ export default function Measurements() {
   const [isEditShirtModalOpen, setIsEditShirtModalOpen] = useState(false);
   const [isEditPantModalOpen, setIsEditPantModalOpen] = useState(false);
   const [editingMeasurement, setEditingMeasurement] = useState(null);
+  const [user, setUser] = useState(null);
+
   const dispatch = useAppDispatch();
   const userMeasurementinfo = useAppSelector(
     (state) => state.customerMeasurement?.userMeasurementinfo,
@@ -28,6 +30,15 @@ export default function Measurements() {
   const userPantMeasurementinfo = useAppSelector(
     (state) => state.pantMeasurement?.userPantMeasurementinfo,
   );
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
+
   const tabs = [
     { id: "Pending", label: "Pending" },
     { id: "Inprogress", label: "Inprogress" },
@@ -40,9 +51,6 @@ export default function Measurements() {
   }, [customerId, dispatch]);
 
   // Debug: Log the measurements data
-  
-  
-  
 
   const addShirt = () => {
     setIsAddShirtModalOpen(true);
@@ -52,15 +60,15 @@ export default function Measurements() {
     setIsAddShirtModalOpen(false);
   };
 
-  const handleAddShirtSuccess = async() => {
-     await dispatch(getShirtMeasurementsCustomerId(customerId));
-      await dispatch(getPantMeasurementsCustomerId(customerId));
-      await Swal.fire({
-        title: "Success!",
-        text: "Shirt added successfully",
-        icon: "success",
-        confirmButtonText: "OK",
-      });
+  const handleAddShirtSuccess = async () => {
+    await dispatch(getShirtMeasurementsCustomerId(customerId));
+    await dispatch(getPantMeasurementsCustomerId(customerId));
+    await Swal.fire({
+      title: "Success!",
+      text: "Shirt added successfully",
+      icon: "success",
+      confirmButtonText: "OK",
+    });
   };
 
   const handleEditMeasurement = (measurement) => {
@@ -82,11 +90,11 @@ export default function Measurements() {
     setEditingMeasurement(null);
   };
 
-  const handleEditShirtSuccess = async() => {
+  const handleEditShirtSuccess = async () => {
     if (customerId) {
       await dispatch(getShirtMeasurementsCustomerId(customerId));
       await dispatch(getPantMeasurementsCustomerId(customerId));
-      await   await Swal.fire({
+      await await Swal.fire({
         title: "Success!",
         text: "Shirt edited successfully",
         icon: "success",
@@ -95,11 +103,11 @@ export default function Measurements() {
     }
   };
 
-  const handleEditPantSuccess = async() => {
+  const handleEditPantSuccess = async () => {
     if (customerId) {
       await dispatch(getShirtMeasurementsCustomerId(customerId));
       await dispatch(getPantMeasurementsCustomerId(customerId));
-      await   await Swal.fire({
+      await await Swal.fire({
         title: "Success!",
         text: "Pant edited successfully",
         icon: "success",
@@ -138,7 +146,6 @@ export default function Measurements() {
         });
 
         if (data.success) {
-          
           if (customerId) {
             dispatch(getShirtMeasurementsCustomerId(customerId));
             dispatch(getPantMeasurementsCustomerId(customerId));
@@ -150,7 +157,6 @@ export default function Measurements() {
           );
         }
       } catch (error) {
-        
         alert("Network error. Please try again.");
       }
     }
@@ -220,7 +226,7 @@ export default function Measurements() {
                   >
                     {measurement.status}
                   </span>
-                  <div className="flex gap-2">
+                 {user?.role ==='admin'&&( <div className="flex gap-2">
                     <button
                       className="p-1 cursor-pointer hover:bg-gray-100 rounded"
                       onClick={() => handleEditMeasurement(measurement)}
@@ -243,7 +249,7 @@ export default function Measurements() {
                         height={20}
                       />
                     </button>
-                  </div>
+                  </div>)}
                 </div>
               </div>
               <div className="flex items-center justify-between mb-2">
@@ -415,28 +421,31 @@ export default function Measurements() {
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-2xl font-bold mb-6">Measurements</h1>
 
-        <div className="flex gap-4 mb-4">
-          <div className="w-48">
-            <button
-              onClick={() => {
-                addShirt();
-              }}
-              className="w-full px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-            >
-              Add Shirt
-            </button>
+        {user?.role === "admin" && (
+          <div className="flex gap-4 mb-4">
+            <div className="w-48">
+              <button
+                onClick={() => {
+                  addShirt();
+                }}
+                className="w-full px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+              >
+                Add Shirt
+              </button>
+            </div>
+
+            <div className="w-48">
+              <button
+                onClick={() => {
+                  addPant();
+                }}
+                className="w-full px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+              >
+                Add Pant
+              </button>
+            </div>
           </div>
-          <div className="w-48">
-            <button
-              onClick={() => {
-                addPant();
-              }}
-              className="w-full px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-            >
-              Add Pant
-            </button>
-          </div>
-        </div>
+        )}
         <div className="border-b border-gray-200 mb-6">
           <nav className="-mb-px flex space-x-8">
             {tabs.map((tab) => (

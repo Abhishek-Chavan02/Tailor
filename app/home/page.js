@@ -18,7 +18,6 @@ export default function Home() {
   const [searchTerm, setSearchTerm] = useState("");
   const [canRender, setCanRender] = useState(false);
   const { users: allUsers } = useAppSelector((state) => state.getAllUsers);
-  console.log("allUsers: ", allUsers);
   const { loading: updateLoading, updatedUser } = useAppSelector(
     (state) => state.updateUser,
   );
@@ -93,7 +92,8 @@ export default function Home() {
 
   return (
     <>
-      <div className="w-100 flex gap-2 ml-4">
+ {user.role==='admin' &&(
+       <div className="w-100 flex gap-2 ml-4">
         <div className="flex-6">
           <Input
             type="text"
@@ -109,6 +109,7 @@ export default function Home() {
           <Button text="Reset" onClick={resetHandle} />
         </div>
       </div>
+ )}
 
       <div className="bg-slate-200 h-screen w-screen">
         <table className="w-full">
