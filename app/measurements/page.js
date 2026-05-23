@@ -138,27 +138,38 @@ export default function Measurements() {
   };
 
   const handleDeleteMeasurement = async (measurement) => {
-    if (window.confirm("Are you sure you want to delete this measurement?")) {
-      try {
-        const data = await api.post("/api/shirt-measurements", {
-          action: "delete",
-          id: measurement._id,
-        });
+    const confirm = await Swal.fire({
+      title: "Are you sure?",
+      text: "You want to delete this measurement",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "Cancel",
+    });
 
-        if (data.success) {
-          if (customerId) {
-            dispatch(getShirtMeasurementsCustomerId(customerId));
-            dispatch(getPantMeasurementsCustomerId(customerId));
-          }
-        } else {
-          alert(
-            "Failed to delete measurement: " +
-              (data.message || "Unknown error"),
-          );
+    if (!confirm.isConfirmed) return;
+
+    try {
+      const endpoint = measurement?.neck
+        ? "/api/shirt-measurements"
+        : "/api/pant-measurements";
+
+      const data = await api.post(endpoint, {
+        action: "delete",
+        id: measurement._id,
+      });
+
+      if (data.success) {
+        if (customerId) {
+          dispatch(getShirtMeasurementsCustomerId(customerId));
+          dispatch(getPantMeasurementsCustomerId(customerId));
         }
-      } catch (error) {
-        alert("Network error. Please try again.");
+        await Swal.fire("Deleted!", "Measurement deleted successfully.", "success");
+      } else {
+        await Swal.fire("Error", data.message || "Failed to delete measurement", "error");
       }
+    } catch (error) {
+      await Swal.fire("Network error", "Please try again.", "error");
     }
   };
 

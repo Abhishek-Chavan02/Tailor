@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { env } from "../env/env";
+import { env, assertMongoConfigured } from "../env/env";
 
 let cached = global.mongoose;
 
@@ -13,6 +13,8 @@ export async function connectDB() {
   }
 
   if (!cached.promise) {
+    assertMongoConfigured();
+
     const opts = {
       bufferCommands: false,
       dbName: env.mongoDbName,
